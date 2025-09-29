@@ -1,319 +1,201 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Xclusive Lifestyle</title>
-
-<style>
-/* -------- Global -------- */
-*{box-sizing:border-box;margin:0;padding:0}
-body{
-  font-family:"Segoe UI",sans-serif;
-  background:radial-gradient(circle at 30% 30%,#0d0d1a 0%,#1a1a2e 40%,#000 100%);
-  color:#fff;overflow-x:hidden;
-}
-h1,h2{text-align:center}
-button{
-  background:linear-gradient(45deg,#6a5acd,#8a2be2);
-  color:#fff;border:none;border-radius:6px;
-  padding:12px 24px;font-size:1rem;cursor:pointer;
-  transition:.2s;
-}
-button:hover{transform:scale(1.05)}
-.hidden{display:none}
-
-/* -------- Splash -------- */
-#splash{
-  position:fixed;top:0;left:0;width:100%;height:100%;
-  background:inherit;display:flex;justify-content:center;align-items:center;
-  flex-direction:column;animation:fadeout 1s ease 3s forwards;
-}
-@keyframes fadeout{to{opacity:0;visibility:hidden}}
-#logo{font-size:3rem;letter-spacing:2px;
-      background:linear-gradient(45deg,#8a2be2,#6a5acd);
-      -webkit-background-clip:text;color:transparent;
-      animation:glow 3s infinite alternate;}
-@keyframes glow{from{text-shadow:0 0 5px #8a2be2}to{text-shadow:0 0 20px #6a5acd}}
-
-/* -------- Steps -------- */
-.container{max-width:500px;margin:40px auto;padding:20px;text-align:center}
-input,select{
-  width:100%;padding:10px;margin:10px 0;border:none;border-radius:6px;font-size:1rem;
-}
-.total-box{margin-top:10px;font-weight:bold}
-
-/* -------- Thank You -------- */
-#thanks{font-size:1.3rem;color:#90ee90;margin-top:20px}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Xclusive Lifestyles</title>
+  <style>
+    body { margin: 0; font-family: 'Poppins', sans-serif; background: #0a0a0a; color: white; }
+    header { text-align: center; padding: 20px; background: #111; }
+    header img { width: 120px; }
+    h1 { color: gold; margin: 10px 0; }
+    .products { display: flex; flex-wrap: wrap; justify-content: center; margin: 20px; }
+    .product { background: #1a1a1a; border-radius: 12px; box-shadow: 0 0 10px rgba(255,215,0,0.2); margin: 10px; padding: 15px; width: 220px; text-align: center; }
+    .product img { width: 100%; border-radius: 12px; }
+    button { background: gold; border: none; padding: 10px; margin-top: 8px; border-radius: 8px; cursor: pointer; font-weight: bold; }
+    button:hover { background: #d4af37; }
+    #cart, #checkout, #trackOrder { display: none; padding: 20px; }
+    input, select { width: 100%; padding: 8px; margin: 8px 0; border-radius: 6px; border: none; }
+    .van { width: 100px; position: fixed; bottom: 20px; left: -120px; transition: left 3s linear; }
+  </style>
 </head>
 <body>
 
-<!-- Splash screen -->
-<div id="splash">
-  <div id="logo">Xclusive Lifestyle</div>
-</div>
+<header>
+  <img src="your-logo.png" alt="Xclusive Lifestyles Logo">
+  <h1>Xclusive Lifestyles</h1>
+</header>
 
-<div class="container" id="step1">
-  <h2>Enter Product Code</h2>
-  <input id="codeInput" placeholder="e.g. UR087SST" />
-  <button onclick="checkCode()">Search</button>
-</div>
+<section class="products">
+  <div class="product">
+    <img src="watch.jpg" alt="Luxury Watch">
+    <h3>Luxury Watch</h3>
+    <p>₹2500</p>
+    <button onclick="addToCart('Luxury Watch',2500)">Add to Cart</button>
+  </div>
+  <div class="product">
+    <img src="shoes.jpg" alt="Premium Shoes">
+    <h3>Premium Shoes</h3>
+    <p>₹1500</p>
+    <button onclick="addToCart('Premium Shoes',1500)">Add to Cart</button>
+  </div>
+</section>
 
-<div class="container hidden" id="step2">
-  <h2 id="productName"></h2>
-  <input type="number" id="qty" value="1" min="1" />
-  <div class="total-box" id="priceBox"></div>
-  <button onclick="toOrder()">Buy</button>
-</div>
+<!-- Cart Section -->
+<section id="cart">
+  <h2>Your Cart</h2>
+  <ul id="cartItems"></ul>
+  <p>Subtotal: ₹<span id="subtotal">0</span></p>
+  <p>GST (5%): ₹<span id="gst">0</span></p>
+  <p>Packaging: ₹<span id="packaging">50</span></p>
+  <p>Discount: ₹<span id="discount">0</span></p>
+  <h3>Total: ₹<span id="total">0</span></h3>
+  <input type="text" id="coupon" placeholder="Enter Coupon">
+  <button onclick="applyCoupon()">Apply Coupon</button>
+  <button onclick="showCheckout()">Proceed to Checkout</button>
+</section>
 
-<div class="container hidden" id="orderForm">
-  <h2>Place Your Order</h2>
-  <form id="finalForm" action="https://formspree.io/f/YOUR_FORMSPREE_ID" method="POST">
-    <input name="name" placeholder="Full Name" required>
-    <input name="phone" placeholder="Phone Number" required>
-    <input name="email" type="email" placeholder="Email">
-    <input name="address" placeholder="Address" required>
-    <input name="pincode" placeholder="Pincode" required>
-    <input name="area" placeholder="Area" required>
-    <input name="city" placeholder="City" required>
-    <input name="landmark" placeholder="Landmark">
+<!-- Checkout Section -->
+<section id="checkout">
+  <h2>Checkout</h2>
+  <input id="custName" placeholder="Full Name">
+  <input id="custEmail" placeholder="Email">
+  <input id="custPhone" placeholder="Phone">
+  <textarea id="custAddress" placeholder="Address"></textarea>
+  <select id="payment">
+    <option>Cash on Delivery</option>
+    <option>UPI</option>
+    <option>Net Banking</option>
+  </select>
+  <button onclick="placeOrder()">Place Order</button>
+</section>
 
-    <select id="payment" name="payment" required>
-      <option value="">Select Payment Mode</option>
-      <option value="COD">Cash on Delivery</option>
-      <option value="UPI">UPI</option>
-      <option value="NetBanking">Net Banking</option>
-      <option value="Card">Credit/Debit</option>
-    </select>
-    <p id="codWarn" class="hidden" style="color:#f88;">Only Cash on Delivery is available.</p>
+<!-- Track Order -->
+<section id="trackOrder">
+  <h2>Track Your Order</h2>
+  <input id="trackId" placeholder="Enter Order ID">
+  <button onclick="trackOrder()">Track</button>
+  <p id="orderStatus"></p>
+</section>
 
-    <input id="coupon" placeholder="Coupon Code (optional)">
-    <div class="total-box" id="grandTotal"></div>
+<img src="van.png" class="van" id="van">
 
-    <button type="submit">Place Order</button>
-  </form>
-  <div id="thanks" class="hidden">✅ All done. Thank you for choosing Xclusive Lifestyle!</div>
-</div>
-
+<!-- jsPDF -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
-/* --- Products with prices --- */
-const products = {
-  "UR087SST": {name:"Home Decor", price:499},
-  "UR6258HIT": {name:"Fashion", price:899},
-  "UR0821RAK": {name:"Gadgets", price:1499}
-};
+let cart = [];
+let discount = 0;
 
-let currentPrice = 0;
-
-function checkCode(){
-  const code = document.getElementById('codeInput').value.trim().toUpperCase();
-  if(products[code]){
-    document.getElementById('productName').textContent = products[code].name;
-    currentPrice = products[code].price;
-    document.getElementById('priceBox').textContent = "Price: ₹"+currentPrice;
-    document.getElementById('step1').classList.add('hidden');
-    document.getElementById('step2').classList.remove('hidden');
-  } else { alert("Invalid product code"); }
+// Add to cart
+function addToCart(name, price) {
+  const item = cart.find(i => i.name === name);
+  if(item) { item.qty++; }
+  else { cart.push({name, price, qty:1}); }
+  localStorage.setItem("cart", JSON.stringify(cart));
+  renderCart();
+  document.getElementById("cart").style.display="block";
 }
 
-function toOrder(){
-  document.getElementById('step2').classList.add('hidden');
-  document.getElementById('orderForm').classList.remove('hidden');
-  calcTotal();
+// Render cart
+function renderCart() {
+  let ul = document.getElementById("cartItems");
+  ul.innerHTML="";
+  let subtotal=0;
+  cart.forEach(i => {
+    ul.innerHTML+=`<li>${i.name} x${i.qty} = ₹${i.qty*i.price}</li>`;
+    subtotal+=i.qty*i.price;
+  });
+  document.getElementById("subtotal").innerText=subtotal;
+  let gst=Math.round(subtotal*0.05);
+  document.getElementById("gst").innerText=gst;
+  document.getElementById("discount").innerText=discount;
+  let total=subtotal+50+gst-discount;
+  document.getElementById("total").innerText=total;
 }
 
-function calcTotal(){
-  const qty = parseInt(document.getElementById('qty').value)||1;
-  let subtotal = currentPrice * qty;
-  const coupon = document.getElementById('coupon').value.trim().toLowerCase();
-  let discount = 0;
-  if(coupon==="xclusive10") discount=10;
-  if(coupon==="lifestyle15") discount=15;
-  const packing = 2;
-  const grand = subtotal + packing - discount;
-  document.getElementById('grandTotal').textContent =
-    `Subtotal ₹${subtotal} + ₹2 packing - ₹${discount} = Grand Total ₹${grand}`;
+// Apply Coupon
+function applyCoupon(){
+  const code=document.getElementById("coupon").value;
+  if(code==="EXCLUSIVE15"){ discount=10; }
+  else if(code==="LIFESTYLE20"){ discount=15; }
+  else{ discount=0; }
+  renderCart();
 }
-document.getElementById('qty').addEventListener('input', calcTotal);
-document.getElementById('coupon').addEventListener('input', calcTotal);
 
-document.getElementById('payment').addEventListener('change', e=>{
-  if(e.target.value!=="COD" && e.target.value!==""){
-    document.getElementById('codWarn').classList.remove('hidden');
-  }else{
-    document.getElementById('codWarn').classList.add('hidden');
+// Show checkout
+function showCheckout(){
+  document.getElementById("cart").style.display="none";
+  document.getElementById("checkout").style.display="block";
+}
+
+// Place order
+function placeOrder(){
+  const customer={
+    name:document.getElementById("custName").value,
+    email:document.getElementById("custEmail").value,
+    phone:document.getElementById("custPhone").value,
+    address:document.getElementById("custAddress").value
+  };
+  const orderId="EXL"+Math.floor(100000+Math.random()*900000);
+  let subtotal=cart.reduce((s,i)=>s+i.qty*i.price,0);
+  let gst=Math.round(subtotal*0.05);
+  let total=subtotal+50+gst-discount;
+  const order={id:orderId, customer, items:cart, charges:{packaging:50,gst,discount}, total};
+  startDeliveryAnimation(()=>{ generateInvoice(order); saveOrder(order); });
+}
+
+// Delivery van animation
+function startDeliveryAnimation(callback){
+  let van=document.getElementById("van");
+  van.style.left="100%";
+  setTimeout(()=>{ van.style.left="-120px"; if(callback) callback(); },3000);
+}
+
+// Save order for tracking
+function saveOrder(order){
+  let orders=JSON.parse(localStorage.getItem("orders"))||{};
+  orders[order.id]={status:"Placed", order};
+  localStorage.setItem("orders", JSON.stringify(orders));
+  alert("Order placed! Your ID: "+order.id);
+  document.getElementById("checkout").style.display="none";
+  document.getElementById("trackOrder").style.display="block";
+}
+
+// Track order
+function trackOrder(){
+  let id=document.getElementById("trackId").value;
+  let orders=JSON.parse(localStorage.getItem("orders"))||{};
+  if(orders[id]){
+    document.getElementById("orderStatus").innerText="Status: "+orders[id].status;
+  } else {
+    document.getElementById("orderStatus").innerText="Order not found.";
   }
-});
-
-document.getElementById('finalForm').addEventListener('submit', async function(e){
-  e.preventDefault();
-  calcTotal();
-  const resp = await fetch(this.action,{method:'POST',body:new FormData(this),headers:{'Accept':'application/json'}});
-  if(resp.ok){
-    this.style.display='none';
-    document.getElementById('thanks').classList.remove('hidden');
-  }else alert('Something went wrong.');
-});
-</script>
-</body>
-</html><!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Xclusive Lifestyle</title>
-
-<style>
-/* -------- Global -------- */
-*{box-sizing:border-box;margin:0;padding:0}
-body{
-  font-family:"Segoe UI",sans-serif;
-  background:radial-gradient(circle at 30% 30%,#0d0d1a 0%,#1a1a2e 40%,#000 100%);
-  color:#fff;overflow-x:hidden;
-}
-h1,h2{text-align:center}
-button{
-  background:linear-gradient(45deg,#6a5acd,#8a2be2);
-  color:#fff;border:none;border-radius:6px;
-  padding:12px 24px;font-size:1rem;cursor:pointer;
-  transition:.2s;
-}
-button:hover{transform:scale(1.05)}
-.hidden{display:none}
-
-/* -------- Splash -------- */
-#splash{
-  position:fixed;top:0;left:0;width:100%;height:100%;
-  background:inherit;display:flex;justify-content:center;align-items:center;
-  flex-direction:column;animation:fadeout 1s ease 3s forwards;
-}
-@keyframes fadeout{to{opacity:0;visibility:hidden}}
-#logo{font-size:3rem;letter-spacing:2px;
-      background:linear-gradient(45deg,#8a2be2,#6a5acd);
-      -webkit-background-clip:text;color:transparent;
-      animation:glow 3s infinite alternate;}
-@keyframes glow{from{text-shadow:0 0 5px #8a2be2}to{text-shadow:0 0 20px #6a5acd}}
-
-/* -------- Steps -------- */
-.container{max-width:500px;margin:40px auto;padding:20px;text-align:center}
-input,select{
-  width:100%;padding:10px;margin:10px 0;border:none;border-radius:6px;font-size:1rem;
-}
-.total-box{margin-top:10px;font-weight:bold}
-
-/* -------- Thank You -------- */
-#thanks{font-size:1.3rem;color:#90ee90;margin-top:20px}
-</style>
-</head>
-<body>
-
-<!-- Splash screen -->
-<div id="splash">
-  <div id="logo">Xclusive Lifestyle</div>
-</div>
-
-<div class="container" id="step1">
-  <h2>Enter Product Code</h2>
-  <input id="codeInput" placeholder="e.g. UR087SST" />
-  <button onclick="checkCode()">Search</button>
-</div>
-
-<div class="container hidden" id="step2">
-  <h2 id="productName"></h2>
-  <input type="number" id="qty" value="1" min="1" />
-  <div class="total-box" id="priceBox"></div>
-  <button onclick="toOrder()">Buy</button>
-</div>
-
-<div class="container hidden" id="orderForm">
-  <h2>Place Your Order</h2>
-  <form id="finalForm" action="https://formspree.io/f/YOUR_FORMSPREE_ID" method="POST">
-    <input name="name" placeholder="Full Name" required>
-    <input name="phone" placeholder="Phone Number" required>
-    <input name="email" type="email" placeholder="Email">
-    <input name="address" placeholder="Address" required>
-    <input name="pincode" placeholder="Pincode" required>
-    <input name="area" placeholder="Area" required>
-    <input name="city" placeholder="City" required>
-    <input name="landmark" placeholder="Landmark">
-
-    <select id="payment" name="payment" required>
-      <option value="">Select Payment Mode</option>
-      <option value="COD">Cash on Delivery</option>
-      <option value="UPI">UPI</option>
-      <option value="NetBanking">Net Banking</option>
-      <option value="Card">Credit/Debit</option>
-    </select>
-    <p id="codWarn" class="hidden" style="color:#f88;">Only Cash on Delivery is available.</p>
-
-    <input id="coupon" placeholder="Coupon Code (optional)">
-    <div class="total-box" id="grandTotal"></div>
-
-    <button type="submit">Place Order</button>
-  </form>
-  <div id="thanks" class="hidden">✅ All done. Thank you for choosing Xclusive Lifestyle!</div>
-</div>
-
-<script>
-/* --- Products with prices --- */
-const products = {
-  "UR087SST": {name:"Home Decor", price:499},
-  "UR6258HIT": {name:"Fashion", price:899},
-  "UR0821RAK": {name:"Gadgets", price:1499}
-};
-
-let currentPrice = 0;
-
-function checkCode(){
-  const code = document.getElementById('codeInput').value.trim().toUpperCase();
-  if(products[code]){
-    document.getElementById('productName').textContent = products[code].name;
-    currentPrice = products[code].price;
-    document.getElementById('priceBox').textContent = "Price: ₹"+currentPrice;
-    document.getElementById('step1').classList.add('hidden');
-    document.getElementById('step2').classList.remove('hidden');
-  } else { alert("Invalid product code"); }
 }
 
-function toOrder(){
-  document.getElementById('step2').classList.add('hidden');
-  document.getElementById('orderForm').classList.remove('hidden');
-  calcTotal();
+// Generate Invoice
+async function generateInvoice(order){
+  const { jsPDF }=window.jspdf;
+  const doc=new jsPDF();
+  doc.setFontSize(22); doc.setTextColor(218,165,32);
+  doc.text("Xclusive Lifestyles",60,25);
+  doc.setFontSize(12); doc.setTextColor(0,0,0);
+  doc.text(`Order ID: ${order.id}`,15,50);
+  doc.text(`Customer: ${order.customer.name}`,15,60);
+  doc.text(`Phone: ${order.customer.phone}`,15,70);
+  let y=90;
+  doc.text("Product",15,y); doc.text("Qty",100,y); doc.text("Price",130,y); doc.text("Total",170,y);
+  y+=10;
+  order.items.forEach(i=>{ doc.text(i.name,15,y); doc.text(i.qty.toString(),105,y); doc.text("₹"+i.price,135,y); doc.text("₹"+(i.qty*i.price),175,y); y+=10; });
+  y+=10;
+  doc.text(`Packaging: ₹${order.charges.packaging}`,135,y); y+=10;
+  doc.text(`GST: ₹${order.charges.gst}`,135,y); y+=10;
+  if(order.charges.discount>0){ doc.text(`Discount: -₹${order.charges.discount}`,135,y); y+=10; }
+  doc.setFontSize(14); doc.setTextColor(218,165,32);
+  doc.text(`Grand Total: ₹${order.total}`,135,y+10);
+  doc.setFontSize(10); doc.setTextColor(100,100,100);
+  doc.text("Thank you for shopping with Xclusive Lifestyles!",15,280);
+  doc.save(`Invoice-${order.id}.pdf`);
 }
-
-function calcTotal(){
-  const qty = parseInt(document.getElementById('qty').value)||1;
-  let subtotal = currentPrice * qty;
-  const coupon = document.getElementById('coupon').value.trim().toLowerCase();
-  let discount = 0;
-  if(coupon==="xclusive10") discount=10;
-  if(coupon==="lifestyle15") discount=15;
-  const packing = 2;
-  const grand = subtotal + packing - discount;
-  document.getElementById('grandTotal').textContent =
-    `Subtotal ₹${subtotal} + ₹2 packing - ₹${discount} = Grand Total ₹${grand}`;
-}
-document.getElementById('qty').addEventListener('input', calcTotal);
-document.getElementById('coupon').addEventListener('input', calcTotal);
-
-document.getElementById('payment').addEventListener('change', e=>{
-  if(e.target.value!=="COD" && e.target.value!==""){
-    document.getElementById('codWarn').classList.remove('hidden');
-  }else{
-    document.getElementById('codWarn').classList.add('hidden');
-  }
-});
-
-document.getElementById('finalForm').addEventListener('submit', async function(e){
-  e.preventDefault();
-  calcTotal();
-  const resp = await fetch(this.action,{method:'POST',body:new FormData(this),headers:{'Accept':'application/json'}});
-  if(resp.ok){
-    this.style.display='none';
-    document.getElementById('thanks').classList.remove('hidden');
-  }else alert('Something went wrong.');
-});
 </script>
 </body>
 </html>
